@@ -627,9 +627,10 @@ class RWKV_TOKENIZER:
             # print(repr(s), i)
         print()
 
-
-tokenizer = RWKV_TOKENIZER("ckpt/v6-Finch-1B6-HF/rwkv_vocab_v20230424.txt")
-
+try:
+    tokenizer = RWKV_TOKENIZER("ckpt/v6-Finch-1B6-HF/rwkv_vocab_v20230424.txt")
+except:
+    pass
 
 ########################################################################################################
 # RWKV utils
