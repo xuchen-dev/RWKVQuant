@@ -65,7 +65,7 @@ from torch.utils.cpp_extension import load
 
 wkv6_cuda = load(
     name="wkv6",
-    sources=["/data01/home/xuchen/gptvq/cuda/wkv6_op.cpp", f"/data01/home/xuchen/gptvq/cuda/wkv6_cuda.cu"],
+    sources=["cuda/wkv6_op.cpp", f"cuda/wkv6_cuda.cu"],
     verbose=True,
     extra_cuda_cflags=["-res-usage", "--use_fast_math", "-O3", "-Xptxas -O3", "--extra-device-vectorization", f"-D_N_={head_size_a}", f"-D_T_={ctx_len}"],
 )
@@ -628,7 +628,7 @@ class RWKV_TOKENIZER:
         print()
 
 
-tokenizer = RWKV_TOKENIZER("/data01/home/xuchen/gptvq/RWKV/v6-Finch-1B6-HF/rwkv_vocab_v20230424.txt")
+tokenizer = RWKV_TOKENIZER("ckpt/v6-Finch-1B6-HF/rwkv_vocab_v20230424.txt")
 
 
 ########################################################################################################
@@ -646,7 +646,7 @@ def get_mod_rwkv_model(model_path=None):
 
 
 def get_rwkv_dataset(n_samples=-1):
-    with open(f"/data01/home/xuchen/RWKV-LM/RWKV-v7/misc/lambada_test.jsonl", "r", encoding="utf-8") as f:
+    with open(f"models/lambada_test.jsonl", "r", encoding="utf-8") as f:
         todo = [json.loads(line) for line in f]
         todo = [[doc["text"].rsplit(" ", 1)[0], " " + doc["text"].rsplit(" ", 1)[1]] for doc in todo]
     if n_samples > 0:
@@ -671,7 +671,7 @@ def get_rwkv_txt_dataset(n_samples=-1):
 
 
 def get_rwkv_token():
-    tokenizer = RWKV_TOKENIZER("/data01/home/xuchen/gptvq/RWKV/v6-Finch-1B6-HF/rwkv_vocab_v20230424.txt")
+    tokenizer = RWKV_TOKENIZER("ckpt/v6-Finch-1B6-HF/rwkv_vocab_v20230424.txt")
     return tokenizer
 
 
@@ -807,9 +807,7 @@ def eval_ppl(model, tokenizer, seqlen=2048, limit=-1, logger=None):
 
 # use https://huggingface.co/BlinkDL/rwkv-6-world/blob/main/RWKV-x060-World-1B6-v2.1-20240328-ctx4096.pth
 if __name__ == "__main__":
-    # MODEL_PATH = "/data01/home/xuchen/gptvq/RWKV/rwkv-6-pile/RWKV-x060-World-14B-v2.1-20240719-ctx4096.pth" # 16.02
-    # MODEL_PATH = "/data01/home/xuchen/gptvq/RWKV/rwkv-6-pile/RWKV-x060-World-3B-v2.1-20240417-ctx4096.pth" # 32.95
-    MODEL_PATH = "/data01/home/xuchen/gptvq/RWKV/rwkv-6-pile/RWKV-x060-World-7B-v2.1-20240507-ctx4096.pth"  # 30.57
+    MODEL_PATH = "ckpt/RWKV-x060-World-7B-v2.1-20240507-ctx4096.pth"  # 30.57
 
     model_params = torch.load(MODEL_PATH, map_location="cpu")
 
@@ -846,7 +844,7 @@ if __name__ == "__main__":
             token_prob = probs[token_id].item()
             print(token, f"[probability {token_prob:.2%}]")
 
-        with open(f"/data01/home/xuchen/RWKV-LM/RWKV-v7/misc/lambada_test.jsonl", "r", encoding="utf-8") as f:
+        with open(f"models/lambada_test.jsonl", "r", encoding="utf-8") as f:
             todo = [json.loads(line) for line in f]
             todo = [[doc["text"].rsplit(" ", 1)[0], " " + doc["text"].rsplit(" ", 1)[1]] for doc in todo]
 

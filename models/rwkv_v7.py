@@ -24,10 +24,6 @@ def get_args(model_path):
 
     # model download: https://huggingface.co/BlinkDL/rwkv-7-pile
     MODEL_PATH = model_path
-    # MODEL_PATH = "/data01/home/xuchen/gptvq/RWKV/rwkv-7-pile/RWKV-x070-Pile-168M-20241120-ctx4096.pth"
-    # MODEL_PATH = "/data01/home/xuchen/gptvq/RWKV/rwkv-7-pile/RWKV-x070-Pile-421M-20241127-ctx4096.pth"
-    # MODEL_PATH = "/data01/home/xuchen/gptvq/RWKV/rwkv-7-pile/RWKV-x070-Pile-1.47B-20241210-ctx4096.pth"
-
     if "168M" in MODEL_PATH:
         args.n_layer = 12
         args.n_embd = 768
@@ -57,7 +53,7 @@ def get_args(model_path):
 
 from tokenizers import Tokenizer
 
-tokenizer = Tokenizer.from_file("/data01/home/xuchen/RWKV-LM/RWKV-v4neo/20B_tokenizer.json")
+tokenizer = Tokenizer.from_file("models/20B_tokenizer.json")
 
 
 class Cus_Mul(nn.Module):
@@ -79,7 +75,7 @@ if USE_CUDA_KERNEL:
 
     load(
         name="wkv7",
-        sources=["/data01/home/xuchen/gptvq/cuda/wkv7_op.cpp", f"/data01/home/xuchen/gptvq/cuda/wkv7.cu"],
+        sources=["cuda/wkv7_op.cpp", f"cuda/wkv7.cu"],
         is_python_module=False,
         verbose=True,
         extra_cuda_cflags=["-res-usage", "--use_fast_math", "-O3", "-Xptxas -O3", "--extra-device-vectorization", f"-D_N_={HEAD_SIZE}"],
@@ -543,7 +539,7 @@ def get_mod_rwkv_model(model_path=None, rotation=False):
 
 
 def get_rwkv_dataset(n_samples=-1):
-    with open(f"/data01/home/xuchen/RWKV-LM/RWKV-v7/misc/lambada_test.jsonl", "r", encoding="utf-8") as f:
+    with open(f"models/lambada_test.jsonl", "r", encoding="utf-8") as f:
         todo = [json.loads(line) for line in f]
         todo = [[doc["text"].rsplit(" ", 1)[0], " " + doc["text"].rsplit(" ", 1)[1]] for doc in todo]
     if n_samples > 0:
@@ -552,7 +548,7 @@ def get_rwkv_dataset(n_samples=-1):
 
 
 def get_rwkv_token():
-    tokenizer = Tokenizer.from_file("/data01/home/xuchen/RWKV-LM/RWKV-v4neo/20B_tokenizer.json")
+    tokenizer = Tokenizer.from_file("models/20B_tokenizer.json")
     return tokenizer
 
 
@@ -683,7 +679,7 @@ def eval_ppl(model, tokenizer, seqlen=2048, limit=-1):
 ########################################################################################################
 
 if __name__ == "__main__":
-    MODEL_PATH = "/data01/home/xuchen/gptvq/RWKV/rwkv-7-pile/RWKV-x070-Pile-168M-20241120-ctx4096.pth"
+    MODEL_PATH = "ckpt/RWKV-x070-Pile-168M-20241120-ctx4096.pth"
 
     args = get_args(MODEL_PATH)
     model_params = torch.load(MODEL_PATH, map_location="cpu")
@@ -726,7 +722,7 @@ if __name__ == "__main__":
 
         ########################################################################################################
 
-        with open(f"/data01/home/xuchen/RWKV-LM/RWKV-v7/misc/lambada_test.jsonl", "r", encoding="utf-8") as f:
+        with open(f"models/lambada_test.jsonl", "r", encoding="utf-8") as f:
             todo = [json.loads(line) for line in f]
             todo = [[doc["text"].rsplit(" ", 1)[0], " " + doc["text"].rsplit(" ", 1)[1]] for doc in todo]
 

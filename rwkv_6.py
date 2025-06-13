@@ -209,14 +209,14 @@ if __name__ == "__main__":
     parser.add_argument("--incoherent_param", type=float, default=10.0, help="Number of incoherent.")
     parser.add_argument("--rotate", action="store_true", help="Whether to rotate.")
     parser.add_argument("--reset_vq", action="store_true", help="Whether to rotate.")
-    parser.add_argument("--use_vptq", action="store_true", help="Whether to rotate.")
-    parser.add_argument("--mq_mse", action="store_true", help="Whether to rotate.")
+    parser.add_argument("--use_vptq", action="store_true", help="Whether to use_vptq.")
+    parser.add_argument("--mq_mse", action="store_true", help="Whether to mq_mse.")
     parser.add_argument("--use_awq", action="store_true", help="Whether to use_awq.")
     parser.add_argument("--mask_q", action="store_true", help="Whether to mask_q.")
     parser.add_argument("--quant_mul", action="store_true", help="Whether to quant_mul.")
-    parser.add_argument("--quant_conv", action="store_true", help="Whether to quant_mul.")
-    parser.add_argument("--use_qurot", action="store_true", help="Whether to mask_q.")
-    parser.add_argument("--coherent_type", type=str, help="VQ scaling bit-width")
+    parser.add_argument("--quant_conv", action="store_true", help="Whether to quant_conv.")
+    parser.add_argument("--use_qurot", action="store_true", help="Whether to use_qurot.")
+    parser.add_argument("--coherent_type", type=str, default="default", help="Choose method for calib coherent")
     parser.add_argument(
         "--percdamp",
         type=float,
@@ -238,7 +238,7 @@ if __name__ == "__main__":
         help="Groupsize to use for quantization; default uses full row.",
     )
     parser.add_argument("--sym", action="store_true", help="Whether to perform symmetric quantization.")
-    parser.add_argument("--save", type=str, default="", help="Save quantized checkpoint under this name.")
+    parser.add_argument("--save", action="store_true", help="Save quantized checkpoint")
     parser.add_argument(
         "--act-order",
         action="store_true",

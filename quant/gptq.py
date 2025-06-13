@@ -348,56 +348,50 @@ class GPTQ:
                     G_norm = G / G.sum()
                     is_incoherent_number = -(G_norm * torch.log(G_norm + 1e-12)).sum()
                 elif coherent_type == "incoherent":
-                    pass
+                    if G_norm[0] == 0:
+                        G_norm = G_norm[1:]
+                    n = G_norm.numel()
+
+                    hce = -np.log(1 / n) + ((G_norm) * torch.log(G_norm)).sum()
+
+                    a1 = (n**2) / 2
+                    a2 = (n**3) / 6
+                    a3 = (n**4) / 12
+                    if k_ablition:
+                        if k_ablition < 3:
+                            a3 = 0
+                        if k_ablition < 2:
+                            a2 = 0
+                        if k_ablition < 1:
+                            a1 = 0
+                        if k_ablition == 4:
+                            a4 = (n**5) / 20
+                        if k_ablition == 5:
+                            a5 = (n**6) / 30
+
+                    fine_number = a1 * ((G_norm - 1 / n) ** 2).mean().abs() + a2 * ((G_norm - 1 / n) ** 3).mean().abs() + a3 * ((G_norm - 1 / n) ** 4).mean().abs()
+
+                    if k_ablition:
+                        if k_ablition == 4:
+                            fine_number += a4 * ((G_norm - 1 / n) ** 5).mean().abs()
+                        if k_ablition == 5:
+                            fine_number += a5 * ((G_norm - 1 / n) ** 6).mean().abs()
+
+                    if all_metric_list is not None:
+                        all_metric_list[0].append(hce)
+                        all_metric_list[1].append(fine_number)
+
+                    is_coherent = hce<incoherent_param[0] and fine_number<incoherent_param[1] # is_incoherent_number > incoherent_param
                 else:
-                    raise NotImplementedError
-
-                if G_norm[0] == 0:
-                    G_norm = G_norm[1:]
-                n = G_norm.numel()
-
-                hce = -np.log(1 / n) + ((G_norm) * torch.log(G_norm)).sum()
-
-                a1 = (n**2) / 2
-                a2 = (n**3) / 6
-                a3 = (n**4) / 12
-                if k_ablition:
-                    if k_ablition < 3:
-                        a3 = 0
-                    if k_ablition < 2:
-                        a2 = 0
-                    if k_ablition < 1:
-                        a1 = 0
-                    if k_ablition == 4:
-                        a4 = (n**5) / 20
-                    if k_ablition == 5:
-                        a5 = (n**6) / 30
-
-                fine_number = a1 * ((G_norm - 1 / n) ** 2).mean().abs() + a2 * ((G_norm - 1 / n) ** 3).mean().abs() + a3 * ((G_norm - 1 / n) ** 4).mean().abs()
-
-                if k_ablition:
-                    if k_ablition == 4:
-                        fine_number += a4 * ((G_norm - 1 / n) ** 5).mean().abs()
-                    if k_ablition == 5:
-                        fine_number += a5 * ((G_norm - 1 / n) ** 6).mean().abs()
-
-                if all_metric_list is not None:
-                    all_metric_list[0].append(hce)
-                    all_metric_list[1].append(fine_number)
-
-                # return
-                # print(name)
-                # print(hce)
-                # print(fine_number)
+                    is_incoherent_number = W.abs().max() * (W.abs() ** 2).sum().mean().rsqrt() * np.sqrt(W.shape[0] * W.shape[1])
 
                 # draw_img(W.detach().cpu().numpy(), "/data01/home/xuchen/gptvq/experiment/a_imgs/latest", name+f"{is_incoherent_number}_{fine_number}"+".png")
                 # torch.save(W.detach().cpu().numpy(), "/data01/home/xuchen/gptvq/experiment/a_imgs/latest/layer_"+name+".npy")
+                if coherent_type == "incoherent":
+                    is_incoherent = not is_coherent
+                else:
+                    is_incoherent = is_incoherent_number > incoherent_param
 
-                is_incoherent_number = W.abs().max() * (W.abs() ** 2).sum().mean().rsqrt() * np.sqrt(W.shape[0] * W.shape[1])
-                # is_coherent = hce<incoherent_param[0] and fine_number<incoherent_param[1] # is_incoherent_number > incoherent_param
-
-                is_incoherent = is_incoherent_number > incoherent_param
-                # if is_coherent:
                 if not is_incoherent:
                     # draw_img(W.detach().cpu().numpy(), "experiment/a_imgs/incoherent", name+".png")
                     if use_vq:

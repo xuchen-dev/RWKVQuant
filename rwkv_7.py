@@ -291,14 +291,14 @@ if __name__ == "__main__":
     parser.add_argument("--reset_vq", action="store_true", help="Whether to reset_vq.")
     parser.add_argument("--mq_mse", action="store_true", help="Whether to mq_mse.")
     parser.add_argument("--use_awq", action="store_true", help="Whether to use_awq.")
-    parser.add_argument("--use_vptq", action="store_true", help="Whether to use_awq.")
-    parser.add_argument("--use_kmeans", action="store_true", help="Whether to use_awq.")
-    parser.add_argument("--use_rtn", action="store_true", help="Whether to use_awq.")
+    parser.add_argument("--use_vptq", action="store_true", help="Whether to use_vptq.")
+    parser.add_argument("--use_kmeans", action="store_true", help="Whether to use_kmeans.")
+    parser.add_argument("--use_rtn", action="store_true", help="Whether to use_rtn.")
     parser.add_argument("--mask_q", action="store_true", help="Whether to mask_q.")
-    parser.add_argument("--use_qurot", action="store_true", help="Whether to mask_q.")
+    parser.add_argument("--use_qurot", action="store_true", help="Whether to use_qurot.")
     parser.add_argument("--quant_mul", action="store_true", help="Whether to quant_mul.")
-    parser.add_argument("--quant_conv", action="store_true", help="Whether to quant_mul.")
-    parser.add_argument("--multi_dataset", action="store_true", help="Whether to quant_mul.")
+    parser.add_argument("--quant_conv", action="store_true", help="Whether to quant_conv.")
+    parser.add_argument("--multi_dataset", action="store_true", help="Whether to multi_dataset for calib.")
     parser.add_argument(
         "--percdamp",
         type=float,
@@ -329,7 +329,7 @@ if __name__ == "__main__":
     parser.add_argument("--vq-dim", type=int, default=2, help="Dimensionality of VQ (if using)")
     parser.add_argument("--vq-scaling-blocksize", type=int, default=-1, help="VQ scaling block size")
     parser.add_argument("--vq-scaling-n-bits", type=int, default=4, help="VQ scaling bit-width")
-    parser.add_argument("--coherent_type", type=str, help="VQ scaling bit-width")
+    parser.add_argument("--coherent_type", type=str, default="default", help="Choose method for calib coherent")
     parser.add_argument("--vq-scaling-norm", type=str, default="max", help="VQ scaling norm")
     parser.add_argument(
         "--vq-scaling-domain",
